@@ -15,7 +15,7 @@ class Stack:
         "Returns true if the stack is empty"
         return len(self.list) == 0
 
-open = Stack()
-open.push("Prvi_push")
-open.push("Drugi_push")
-print open.pop()
+visited = []
+visited.append((1,1))
+visited.append((2,2))
+print (1,2) not in visited

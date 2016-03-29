@@ -143,19 +143,29 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
-    #print "Start:", problem.getStartState()
-    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
+
+    print "Start:", problem.getStartState()
+    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+
+    #napravit sa state-ovima, na kraj funkcije napravit backtrack
     if problem.isGoalState(problem.getStartState()):
         return []
-    open = Stack()
-    open.push(problem.getStartState())
-    while not open.isEmpty():
-        current = open.pop()
+    open = [problem.getStartState()]
+    visited = []
+    #print problem.getSuccessors(current)[0][0]
+    while open:
+        print open
+        print "Searching"
+        current = open.pop(0)
         if problem.isGoalState(current):
+            print "Found"
             return open
-
-
+        visited.append(current)
+        for succ in problem.getSuccessors(current):
+            if succ[0] not in visited:
+                open.insert(0, succ[0])
+            
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
