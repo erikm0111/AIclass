@@ -202,20 +202,21 @@ def breadthFirstSearch(problem):
                 temp = SearchNode(succ.position, currentNode, succ.transition, 0, 0)
                 queueOpen.push(temp)
 
+
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    from util import Queue
+    from util import PriorityQueue
     from game import Directions
 
-    queueOpen = Queue()
+    queueOpen = PriorityQueue()
 
     rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
 
     if problem.isGoalState(rootNode.position):
         return []
 
-    queueOpen.push(rootNode)
+    queueOpen.push(rootNode, rootNode.cost)
     visited = []
 
     while not queueOpen.isEmpty():
@@ -223,10 +224,10 @@ def uniformCostSearch(problem):
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
         visited.append(currentNode.position)
-        for succ in problem.getSuccessors(currentNode.position):
-            if succ[0] not in visited:
-                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
-                queueOpen.push(temp)
+        for succ in expand(problem, currentNode):
+            if succ.position not in visited:
+                temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
+                queueOpen.push(temp, problem.getCostOfActions(currentNode.backtrack()))
 
 
 def nullHeuristic(state, problem=None):
