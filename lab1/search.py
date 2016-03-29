@@ -71,11 +71,10 @@ class SearchNode:
             return moves        
 
         "**YOUR CODE HERE**"
-        while True:
-            if node.isRootNode():
-                break
+        while not node.isRootNode():
             moves.append(node.transition)
             node = node.parent
+
         moves.reverse()
         return moves
 
@@ -133,6 +132,11 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def expand(problem, currentNode):
+    """Expand successors of current node."""
+    return [SearchNode(succ[0], currentNode, succ[1], currentNode.cost+1, 0) for succ in problem.getSuccessors(currentNode.position)]
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -166,9 +170,9 @@ def depthFirstSearch(problem):
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
         visited.append(currentNode.position)
-        for succ in problem.getSuccessors(currentNode.position):
-            if succ[0] not in visited:
-                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
+        for succ in expand(problem, currentNode):
+            if succ.position not in visited:
+                temp = SearchNode(succ.position, currentNode, succ.transition, 0, 0)
                 stackOpen.push(temp)
 
 
@@ -193,15 +197,37 @@ def breadthFirstSearch(problem):
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
         visited.append(currentNode.position)
-        for succ in problem.getSuccessors(currentNode.position):
-            if succ[0] not in visited:
-                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
+        for succ in expand(problem, currentNode):
+            if succ.position not in visited:
+                temp = SearchNode(succ.position, currentNode, succ.transition, 0, 0)
                 queueOpen.push(temp)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+    from game import Directions
+
+    queueOpen = Queue()
+
+    rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
+
+    if problem.isGoalState(rootNode.position):
+        return []
+
+    queueOpen.push(rootNode)
+    visited = []
+
+    while not queueOpen.isEmpty():
+        currentNode = queueOpen.pop()
+        if problem.isGoalState(currentNode.position):
+            return currentNode.backtrack()
+        visited.append(currentNode.position)
+        for succ in problem.getSuccessors(currentNode.position):
+            if succ[0] not in visited:
+                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
+                queueOpen.push(temp)
+
 
 def nullHeuristic(state, problem=None):
     """
