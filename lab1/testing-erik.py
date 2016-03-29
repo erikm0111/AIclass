@@ -15,7 +15,5 @@ class Stack:
         "Returns true if the stack is empty"
         return len(self.list) == 0
 
-visited = []
-visited.append((1,1))
-visited.append((2,2))
-print (1,2) not in visited
+nesto='string1'
+print nesto=='string1'

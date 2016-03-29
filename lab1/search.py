@@ -71,7 +71,13 @@ class SearchNode:
             return moves        
 
         "**YOUR CODE HERE**"
-        util.raiseNotDefined()
+        while True:
+            if node.isRootNode():
+                break
+            moves.append(node.transition)
+            node = node.parent
+        moves.reverse()
+        return moves
 
 
 class SearchProblem:
@@ -143,30 +149,39 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
+    from game import Directions
 
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    s = Directions.SOUTH
+    n = Directions.NORTH
+    w = Directions.WEST
+    e = Directions.EAST
+    stack = Stack()
 
-    #napravit sa state-ovima, na kraj funkcije napravit backtrack
-    if problem.isGoalState(problem.getStartState()):
+    rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
+
+    if problem.isGoalState(rootNode.position):
         return []
-    open = [problem.getStartState()]
+
+    listOpen = [rootNode]
     visited = []
-    #print problem.getSuccessors(current)[0][0]
-    while open:
-        print open
-        print "Searching"
-        current = open.pop(0)
-        if problem.isGoalState(current):
-            print "Found"
-            return open
-        visited.append(current)
-        for succ in problem.getSuccessors(current):
+
+    while listOpen:
+        currentNode = listOpen.pop(0)
+        if problem.isGoalState(currentNode.position):
+            return currentNode.backtrack()
+        visited.append(currentNode.position)
+        for succ in problem.getSuccessors(currentNode.position):
             if succ[0] not in visited:
-                open.insert(0, succ[0])
-            
-    util.raiseNotDefined()
+                if succ[1]=='West':
+                    temp = SearchNode(succ[0], currentNode, w, 0, 0)
+                elif succ[1]=='East':
+                    temp = SearchNode(succ[0], currentNode, e, 0, 0)
+                elif succ[1]=='North':
+                    temp = SearchNode(succ[0], currentNode, n, 0, 0)
+                elif succ[1]=='South':
+                    temp = SearchNode(succ[0], currentNode, s, 0, 0)
+                listOpen.insert(0, temp)
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
