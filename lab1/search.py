@@ -153,7 +153,6 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
-    from game import Directions
 
     stackOpen = Stack()
 
@@ -180,7 +179,6 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     from util import Queue
-    from game import Directions
 
     queueOpen = Queue()
 
@@ -207,7 +205,6 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
-    from game import Directions
 
     queueOpen = PriorityQueue()
 
@@ -225,7 +222,7 @@ def uniformCostSearch(problem):
             return currentNode.backtrack()
         visited.append(currentNode.position)
         for succ in expand(problem, currentNode):
-            if succ.position not in visited:
+            if succ.position in visited or succ.position in queueOpen:
                 temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
                 queueOpen.push(temp, succ.cost)
 
@@ -240,7 +237,55 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    queueOpen = PriorityQueue()
+    openNodes = []
+    closedNodes = []
+    visited = []
+    opened = []
+
+    rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
+
+    if problem.isGoalState(rootNode.position):
+        return []
+
+    queueOpen.push(rootNode, 0)
+    openNodes.append(rootNode)
+    opened.append(rootNode.position)
+
+    while not queueOpen.isEmpty():
+        currentNode = queueOpen.pop()
+        openNodes.remove(currentNode)
+        opened.remove(currentNode.position)
+
+        if problem.isGoalState(currentNode.position):
+            return currentNode.backtrack()
+        visited.append(currentNode.position)
+        closedNodes.append(currentNode)
+        for succ in expand(problem, currentNode):
+            #potrazi dali je succ.position jednak jos kojem takvom u open i closed listi
+            #dohvati takav node iz open ili closed liste
+            #usporedi njihove cijenu succ i succ'
+            #brisi iz liste ako je potrebno
+            flag = False
+            if succ.position in visited:
+                for t in closedNodes:
+                    if t.position==succ.position:
+                        flag = True
+                        break;
+
+            if succ.position in opened:
+                for t in openNodes:
+                    if t.position==succ.position:
+                        flag = True
+                        break;
+            if not flag:
+                temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
+                f = succ.cost + heuristic(succ.position, problem)
+                queueOpen.push(temp, f)
+                openNodes.append(temp)
+                opened.append(temp.position)
 
 
 # Abbreviations
