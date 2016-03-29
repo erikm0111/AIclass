@@ -134,7 +134,7 @@ def tinyMazeSearch(problem):
 
 def expand(problem, currentNode):
     """Expand successors of current node."""
-    return [SearchNode(succ[0], currentNode, succ[1], currentNode.cost+1, 0) for succ in problem.getSuccessors(currentNode.position)]
+    return [SearchNode(succ[0], currentNode, succ[1], currentNode.cost+succ[2], 0) for succ in problem.getSuccessors(currentNode.position)]
 
 
 def depthFirstSearch(problem):
@@ -216,7 +216,7 @@ def uniformCostSearch(problem):
     if problem.isGoalState(rootNode.position):
         return []
 
-    queueOpen.push(rootNode, rootNode.cost)
+    queueOpen.push(rootNode, 0)
     visited = []
 
     while not queueOpen.isEmpty():
@@ -227,7 +227,7 @@ def uniformCostSearch(problem):
         for succ in expand(problem, currentNode):
             if succ.position not in visited:
                 temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
-                queueOpen.push(temp, problem.getCostOfActions(currentNode.backtrack()))
+                queueOpen.push(temp, succ.cost)
 
 
 def nullHeuristic(state, problem=None):
