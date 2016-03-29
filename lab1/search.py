@@ -151,42 +151,52 @@ def depthFirstSearch(problem):
     from util import Stack
     from game import Directions
 
-    s = Directions.SOUTH
-    n = Directions.NORTH
-    w = Directions.WEST
-    e = Directions.EAST
-    stack = Stack()
+    stackOpen = Stack()
 
     rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
 
     if problem.isGoalState(rootNode.position):
         return []
 
-    listOpen = [rootNode]
+    stackOpen.push(rootNode)
     visited = []
 
-    while listOpen:
-        currentNode = listOpen.pop(0)
+    while not stackOpen.isEmpty():
+        currentNode = stackOpen.pop()
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
         visited.append(currentNode.position)
         for succ in problem.getSuccessors(currentNode.position):
             if succ[0] not in visited:
-                if succ[1]=='West':
-                    temp = SearchNode(succ[0], currentNode, w, 0, 0)
-                elif succ[1]=='East':
-                    temp = SearchNode(succ[0], currentNode, e, 0, 0)
-                elif succ[1]=='North':
-                    temp = SearchNode(succ[0], currentNode, n, 0, 0)
-                elif succ[1]=='South':
-                    temp = SearchNode(succ[0], currentNode, s, 0, 0)
-                listOpen.insert(0, temp)
+                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
+                stackOpen.push(temp)
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+    from game import Directions
+
+    queueOpen = Queue()
+
+    rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
+
+    if problem.isGoalState(rootNode.position):
+        return []
+
+    queueOpen.push(rootNode)
+    visited = []
+
+    while not queueOpen.isEmpty():
+        currentNode = queueOpen.pop()
+        if problem.isGoalState(currentNode.position):
+            return currentNode.backtrack()
+        visited.append(currentNode.position)
+        for succ in problem.getSuccessors(currentNode.position):
+            if succ[0] not in visited:
+                temp = SearchNode(succ[0], currentNode, succ[1], 0, 0)
+                queueOpen.push(temp)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
