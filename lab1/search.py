@@ -266,6 +266,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     openNodes.append(rootNode)
     opened.append(rootNode.position)
 
+    """ideja --> napravit dictionary sa key: (x, y), value: SearchNode"""
+
     while not queueOpen.isEmpty():
         currentNode = queueOpen.pop()
         openNodes.remove(currentNode)
@@ -279,21 +281,22 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         for succ in expand(problem, currentNode):
             #potrazi dali je succ.position jednak jos kojem takvom u open i closed listi
             #dohvati takav node iz open ili closed liste
-            #usporedi njihove cijenu succ i succ'
+            #usporedi cijene od succ i succ'
             #brisi iz liste ako je potrebno
-            #if succ.position not in visited:
             flag = False
             if succ.position in visited:
                 for t in closedNodes:
                     if t.position==succ.position:
-                        flag = True
-                        break;
+                        if t.cost < succ.cost:
+                            flag = True
+                            break;
 
             if succ.position in opened:
                 for t in openNodes:
                     if t.position==succ.position:
-                        flag = True
-                        break;
+                        if t.cost < succ.cost:
+                            flag = True
+                            break;
             if not flag:
                 temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
                 f = succ.cost + heuristic(succ.position, problem)
