@@ -162,16 +162,18 @@ def depthFirstSearch(problem):
         return []
 
     stackOpen.push(rootNode)
-    visited = []
+    visited = {}
 
     while not stackOpen.isEmpty():
         currentNode = stackOpen.pop()
+        if currentNode.position in visited:
+            continue
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
-        visited.append(currentNode.position)
+        visited[currentNode.position] = True
         for succ in expand(problem, currentNode):
             if succ.position not in visited:
-                temp = SearchNode(succ.position, currentNode, succ.transition, 0, 0)
+                temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
                 stackOpen.push(temp)
 
 
@@ -188,22 +190,30 @@ def breadthFirstSearch(problem):
         return []
 
     queueOpen.push(rootNode)
-    visited = []
+    visited = {}
+    #visited;
+    #cvorovi = [pocetni];
 
     while not queueOpen.isEmpty():
+        #ako je cvor u visited -> continue
+        #stavi cvor u visited
+        #za svakog sljedbenika: ako nije u visited, dodaj ga u cvorove
         currentNode = queueOpen.pop()
+        if currentNode.position in visited:
+            continue
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
-        visited.append(currentNode.position)
+        visited[currentNode.position] = True
         for succ in expand(problem, currentNode):
             if succ.position not in visited:
-                temp = SearchNode(succ.position, currentNode, succ.transition, 0, 0)
+                temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
                 queueOpen.push(temp)
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    
     from util import PriorityQueue
 
     queueOpen = PriorityQueue()
@@ -214,15 +224,17 @@ def uniformCostSearch(problem):
         return []
 
     queueOpen.push(rootNode, 0)
-    visited = []
+    visited = {}
 
     while not queueOpen.isEmpty():
         currentNode = queueOpen.pop()
+        if currentNode.position in visited:
+            continue
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
-        visited.append(currentNode.position)
+        visited[currentNode.position] = True
         for succ in expand(problem, currentNode):
-            if succ.position in visited or succ.position in queueOpen:
+            if succ.position not in visited:
                 temp = SearchNode(succ.position, currentNode, succ.transition, succ.cost, 0)
                 queueOpen.push(temp, succ.cost)
 
@@ -242,7 +254,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     queueOpen = PriorityQueue()
     openNodes = []
     closedNodes = []
-    visited = []
+    visited = {}
     opened = []
 
     rootNode = SearchNode(problem.getStartState(), None, None, 0, 0)
@@ -258,16 +270,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         currentNode = queueOpen.pop()
         openNodes.remove(currentNode)
         opened.remove(currentNode.position)
-
+        if currentNode.position in visited:
+            continue
         if problem.isGoalState(currentNode.position):
             return currentNode.backtrack()
-        visited.append(currentNode.position)
+        visited[currentNode.position] = True
         closedNodes.append(currentNode)
         for succ in expand(problem, currentNode):
             #potrazi dali je succ.position jednak jos kojem takvom u open i closed listi
             #dohvati takav node iz open ili closed liste
             #usporedi njihove cijenu succ i succ'
             #brisi iz liste ako je potrebno
+            #if succ.position not in visited:
             flag = False
             if succ.position in visited:
                 for t in closedNodes:
