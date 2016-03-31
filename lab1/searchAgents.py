@@ -397,7 +397,7 @@ def cornersHeuristic(state, problem):
                 min_dist_corner = c
     else:
         return 0
-    return manhattanDistance(currPos, min_dist_corner) + len(corners_list)
+    return manhattanDistance(currPos, min_dist_corner)
 
 
 def euclideanDistance(point1, point2):
@@ -591,7 +591,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
 
-        self.food_list = self.food.asList()
 
     def isGoalState(self, state):
         """
@@ -601,7 +600,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        return x,y == 0,0
+        return self.food[x][y] == True
 
 def mazeDistance(point1, point2, gameState):
     """
