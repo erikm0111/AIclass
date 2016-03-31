@@ -288,7 +288,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.corners_list = list(self.corners)
+        self.start = (self.startingPosition, startingGameState.getFood())
+        #((position), [foodGrid])
 
     def getStartState(self):
         """
@@ -296,19 +297,14 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition
+        return self.start
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        if state in self.corners_list:
-            if len(self.corners_list) > 1:
-                self.corners_list.remove(state)
-                return False
-            else:
-                return True
+        return state[1].count() == 0
 
     def getSuccessors(self, state):
         """
@@ -330,14 +326,16 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
             "*** YOUR CODE HERE ***"
-            x,y = state
+            x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
                 nextState = (nextx, nexty)
                 #cost = self.costFn(nextState)
-                successors.append( ( nextState, action, 1) )
+                nextFood = state[1].copy()
+                nextFood[nextx][nexty] = False
+                successors.append( ( (nextState, nextFood), action, 1) )
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
