@@ -316,7 +316,6 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -367,11 +366,42 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+    #(1,1),(1,top),(right,1),(right,top)
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    """
+    xy1 = position
+    xy2 = problem.goal
+    return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+    """
+    from util import manhattanDistance
+    import sys
+    #mazeDistance(point1, point2, gameState)
+    #pronaci najblizu tocku od trenutne
+    #kao heuristiku vratit manhattanDistance do te tocke od trenutne
+    #manhattan -> abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+    #euclidean -> ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+    
+    currPos = state[0]
+    corners_list = state[1].asList()
+    #min_dist = sys.maxint
+    min_dist = 100000
+    min_dist_corner = None
+    if len(corners_list)>0:
+        for c in corners_list:
+            x = euclideanDistance(currPos, c)
+            if x < min_dist:
+                min_dist = x
+                min_dist_corner = c
+    else:
+        return 0
+    return manhattanDistance(currPos, min_dist_corner)
+
+
+def euclideanDistance(point1, point2):
+   return ( (point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2 ) ** 0.5
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -496,7 +526,30 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        from search import SearchNode
+        from search import expand
+        rootNode = SearchNode(startPosition, None, None, 0, 0)
+        visited = {}
+
+        n = rootNode
+        while True:
+            successors = expand(problem, n)
+            if not successors:
+                return n.backtrack()
+            m = None
+            value = -1
+            for succ in successors:
+                if succ.cost > value:
+                    m = succ
+            if n.cost <= m.cost:
+                return n.backtrack()
+            n = m
+            
+        #return search.bfs(problem)
+            
+
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -524,6 +577,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
 
+        self.food_list = self.food.asList()
+
     def isGoalState(self, state):
         """
         The state is Pacman's position. Fill this in with a goal test that will
@@ -532,7 +587,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return x,y == 0,0
 
 def mazeDistance(point1, point2, gameState):
     """

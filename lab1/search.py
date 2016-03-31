@@ -279,10 +279,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         visited[currentNode.position] = True
         closedNodes.append(currentNode)
         for succ in expand(problem, currentNode):
-            #potrazi dali je succ.position jednak jos kojem takvom u open i closed listi
-            #dohvati takav node iz open ili closed liste
-            #usporedi cijene od succ i succ'
-            #brisi iz liste ako je potrebno
+            """provjera da li je u visited, provjera da li je u opened, ako je u nekom od ta dva 
+            onda preskoci dodavanje novog cvora jer vec postoji onaj s manjom vrijednosti"""
             flag = False
             if succ.position in visited:
                 for t in closedNodes:
