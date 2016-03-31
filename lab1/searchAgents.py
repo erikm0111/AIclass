@@ -397,7 +397,7 @@ def cornersHeuristic(state, problem):
                 min_dist_corner = c
     else:
         return 0
-    return manhattanDistance(currPos, min_dist_corner)
+    return manhattanDistance(currPos, min_dist_corner) + len(corners_list)
 
 
 def euclideanDistance(point1, point2):
@@ -495,7 +495,21 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    from util import manhattanDistance
+    currPos = state[0]
+    corners_list = state[1].asList()
+    #min_dist = sys.maxint
+    min_dist = 100000
+    min_dist_corner = None
+    if len(corners_list)>0:
+        for c in corners_list:
+            x = euclideanDistance(currPos, c)
+            if x < min_dist:
+                min_dist = x
+                min_dist_corner = c
+    else:
+        return 0
+    return manhattanDistance(currPos, min_dist_corner)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -526,7 +540,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        
+        """
         from search import SearchNode
         from search import expand
         rootNode = SearchNode(startPosition, None, None, 0, 0)
@@ -545,8 +559,8 @@ class ClosestDotSearchAgent(SearchAgent):
             if n.cost <= m.cost:
                 return n.backtrack()
             n = m
-            
-        #return search.bfs(problem)
+            """
+        return search.astar(problem)
             
 
 
