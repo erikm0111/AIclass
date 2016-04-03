@@ -13,7 +13,8 @@ print len(neka_lista)
 """
 #p =lambda x: x*2
 #print p(2)
-
+import sys
 position = ((2,3),"Ludilo")
 x,y = position[0]
 print x,y
+print sys.maxint

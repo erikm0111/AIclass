@@ -288,7 +288,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                         if t.cost < succ.cost:
                             flag = True
                             break;
-
             if succ.position in opened:
                 for t in openNodes:
                     if t.position==succ.position:

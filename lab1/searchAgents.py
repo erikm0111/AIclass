@@ -371,34 +371,43 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    """
-    xy1 = position
-    xy2 = problem.goal
-    return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
-    """
+
+    """Pronaci najblizi corner od trenutne tocke. 
+    Funkcija treba vratit vrijednost manhattan udaljenosti trenutne tocke od najblizeg cornera + zbroj udaljenosti do ostalih cornera"""
     from util import manhattanDistance
     import sys
-    #mazeDistance(point1, point2, gameState)
-    #pronaci najblizu tocku od trenutne
-    #kao heuristiku vratit manhattanDistance do te tocke od trenutne
     #manhattan -> abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
     #euclidean -> ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
     
     currPos = state[0]
     corners_list = state[1].asList()
-    #min_dist = sys.maxint
-    min_dist = 100000
+    min_dist = sys.maxint
     min_dist_corner = None
+    dist_to_closest = 0
+    remaining_dist = 0
     if len(corners_list)>0:
         for c in corners_list:
-            x = euclideanDistance(currPos, c)
+            x = manhattanDistance(currPos, c)
             if x < min_dist:
                 min_dist = x
                 min_dist_corner = c
+        dist_to_closest = min_dist
+        corners_list.remove(min_dist_corner)
+        while corners_list:
+            min_dist = sys.maxint
+            for c in corners_list:
+                x = manhattanDistance(min_dist_corner, c)
+                if x < min_dist:
+                    min_dist = x
+                    min_dist_corner = c
+            remaining_dist += min_dist
+            corners_list.remove(min_dist_corner)
     else:
         return 0
-    return manhattanDistance(currPos, min_dist_corner)
-
+    #return manhattanDistance(currPos, min_dist_corner) + remaining_dist
+    #return heuristic + len(corners_list)
+    return remaining_dist + dist_to_closest
+    
 
 def euclideanDistance(point1, point2):
    return ( (point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2 ) ** 0.5
