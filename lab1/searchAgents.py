@@ -513,38 +513,6 @@ def foodHeuristic(state, problem):
     else:
         return 0
     """
-
-    """
-    from util import manhattanDistance
-    import sys
-    corners_list = foodGrid.asList()
-    currPos = position
-    min_dist = sys.maxint
-    min_dist_corner = None
-    dist_to_closest = 0
-    remaining_dist = 0
-    if len(corners_list)>0:
-        for c in corners_list:
-            x = manhattanDistance(currPos, c)
-            if x < min_dist:
-                min_dist = x
-                min_dist_corner = c
-        dist_to_closest = min_dist
-        corners_list.remove(min_dist_corner)
-        while corners_list:
-            min_dist = sys.maxint
-            for c in corners_list:
-                x = manhattanDistance(min_dist_corner, c)
-                if x < min_dist:
-                    min_dist = x
-                    min_dist_corner = c
-            remaining_dist += min_dist
-            corners_list.remove(min_dist_corner)
-    else:
-        return 0
-    #return manhattanDistance(currPos, min_dist_corner) + remaining_dist
-    #return heuristic + len(corners_list)
-    return remaining_dist + dist_to_closest
     """
     from util import manhattanDistance
     import sys
@@ -574,7 +542,37 @@ def foodHeuristic(state, problem):
     else:
         return 0
     #return dist_to_closest + remaining_dist
-    return mazeDistance(currPos, min_dist_food, problem.startingGameState)
+    return mazeDistance(currPos, min_dist_food, problem.startingGameState) + remaining_dist
+    """
+    from util import manhattanDistance
+    import sys
+    food_list = foodGrid.asList()
+    currPos = position
+    min_dist = sys.maxint
+    min_dist_food = None
+    dist_to_closest = 0
+    remaining_dist = 0
+    if len(food_list)>0:
+        for c in food_list:
+            x = manhattanDistance(currPos, c)
+            if x < min_dist:
+                min_dist = x
+                min_dist_food = c
+        dist_to_closest = min_dist
+        food_list.remove(min_dist_food)
+        #while food_list:
+        #    min_dist = sys.maxint
+        #    for c in food_list:
+        #        x = manhattanDistance(min_dist_food, c)
+        #        if x < min_dist:
+        #            min_dist = x
+        #            min_dist_food = c
+        #    remaining_dist += min_dist
+        #    food_list.remove(min_dist_food)
+    else:
+        return 0
+    #return dist_to_closest + remaining_dist
+    return mazeDistance(currPos, min_dist_food, problem.startingGameState) + len(food_list)
     
 
 class ClosestDotSearchAgent(SearchAgent):
