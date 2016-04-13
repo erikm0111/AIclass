@@ -544,6 +544,7 @@ def foodHeuristic(state, problem):
     #return dist_to_closest + remaining_dist
     return mazeDistance(currPos, min_dist_food, problem.startingGameState) + remaining_dist
     """
+    """
     from util import manhattanDistance
     import sys
     food_list = foodGrid.asList()
@@ -573,6 +574,26 @@ def foodHeuristic(state, problem):
         return 0
     #return dist_to_closest + remaining_dist
     return mazeDistance(currPos, min_dist_food, problem.startingGameState) + len(food_list)
+    """
+    from util import manhattanDistance
+    import sys
+    food_list = foodGrid.asList()
+    currPos = position
+    min_dist = sys.maxint
+    min_dist_food = None
+    dist_to_closest = 0
+    remaining_dist = 0
+    if len(food_list)>0:
+        for c in food_list:
+            x = manhattanDistance(currPos, c)
+            if x < min_dist:
+                min_dist = x
+                min_dist_food = c
+        dist_to_closest = min_dist
+        food_list.remove(min_dist_food)
+    else:
+        return 0
+    return manhattanDistance(currPos, min_dist_food) + len(food_list)
     
 
 class ClosestDotSearchAgent(SearchAgent):
