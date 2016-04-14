@@ -228,6 +228,16 @@ def resolution(clauses, goal):
     ###                              ###
     ####################################
     """
+    """
+    for pair in selectClauses(clauses, setOfSupport, resolvedPairs):
+        resolvents = resolvePair(pair[0], pair[1])
+        if resolvents == 'NIL':
+            return True
+        else:
+
+    return True
+    """
+    
 
 def removeRedundant(clauses, setOfSupport):
     """
@@ -252,7 +262,25 @@ def resolvePair(firstClause, secondClause):
     ###                              ###
     ####################################
     """
-    pass 
+    """stavit provjeru u resolution?"""
+    literalsNew = set()
+    if firstClause.isResolveableWith(secondClause):
+        for literal in firstClause.literals:
+            if literal.negate() in secondClause.literals:
+                continue
+            else:
+                literalsNew.add(literal)
+        for literal in secondClause.literals:
+            if literal.negate() in firstClause.literals:
+                continue
+            else:
+                literalsNew.add(literal)
+        if len(literalsNew) == 0:
+            return 'NIL'
+        else:
+            return Clause(literalsNew)
+    else:
+        pass
 
 def selectClauses(clauses, setOfSupport, resolvedPairs):
     """
@@ -270,12 +298,23 @@ def testResolution():
     A sample of a resolution problem that should return True. 
     You should come up with your own tests in order to validate your code. 
     """
+
+    """
+
+    ~a v b  |
+    ~b v c  |   premises
+    a       |
+    --------+
+    c       |   goal
+
+    """
     premise1 = Clause(set([Literal('a', (0, 0), True), Literal('b', (0, 0), False)]))
     premise2 = Clause(set([Literal('b', (0, 0), True), Literal('c', (0, 0), False)]))
     premise3 = Clause(Literal('a', (0,0)))
 
     goal = Clause(Literal('c', (0,0)))
     print resolution(set([premise1, premise2, premise3]), goal)
+
 
 if __name__ == '__main__':
     """
