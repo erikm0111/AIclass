@@ -235,8 +235,6 @@ def resolution(clauses, goal):
                 setOfSupport.add(resolvents)
         for x in setOfSupport:
             clauses.add(x)
-        
-    #return selectClauses(clauses, setOfSupport, resolvedPairs)
     
 
 def removeRedundant(clauses, setOfSupport):
@@ -402,6 +400,21 @@ def testResolutionFalse1():
     print resolution(set([premise1, premise2, premise3]), goal)
 
 
+def testResolutionFact():
+    """
+    ~a v b  |
+    ~b v ~a |   premises
+    --------+
+    ~a      |   goal (needs to be negated first)
+
+    """
+    premise1 = Clause(set([Literal('a', (0, 0), True), Literal('b', (0, 0), False)]))
+    premise2 = Clause(set([Literal('b', (0, 0), True), Literal('a', (0, 0), True)]))
+    goal = Clause(Literal('a', (0,0), True))
+
+    print resolution(set([premise1, premise2]), goal)
+
+
 if __name__ == '__main__':
     """
     The main function - if you run logic.py from the command line by 
@@ -409,4 +422,4 @@ if __name__ == '__main__':
 
     this is the starting point of the code which will run. 
     """ 
-    testResolution3()
+    testResolution2()
