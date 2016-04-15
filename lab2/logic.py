@@ -221,22 +221,22 @@ def resolution(clauses, goal):
     """
     resolvedPairs = set()
     setOfSupport = goal.negateAll() 
-    """
-    ####################################
-    ###                              ###
-    ###        YOUR CODE HERE        ###
-    ###                              ###
-    ####################################
-    """
-    """
-    for pair in selectClauses(clauses, setOfSupport, resolvedPairs):
-        resolvents = resolvePair(pair[0], pair[1])
-        if resolvents == 'NIL':
-            return True
-        else:
 
-    return True
-    """
+    while True:
+        selectedClauses = selectClauses(clauses, setOfSupport, resolvedPairs)
+        if len(selectedClauses) == 0:
+            return False
+        for pair in selectedClauses:
+            resolvents = resolvePair(pair[0], pair[1])
+            resolvedPairs.add(pair)
+            if resolvents == 'NIL':
+                return True
+            else:
+                setOfSupport.add(resolvents)
+        for x in setOfSupport:
+            clauses.add(x)
+        
+    #return selectClauses(clauses, setOfSupport, resolvedPairs)
     
 
 def removeRedundant(clauses, setOfSupport):
@@ -254,44 +254,34 @@ def removeRedundant(clauses, setOfSupport):
     pass 
 
 def resolvePair(firstClause, secondClause):
-    """
-    Resolve a pair of clauses.
-    ####################################
-    ###                              ###
-    ###        YOUR CODE HERE        ###
-    ###                              ###
-    ####################################
-    """
-    """stavit provjeru u resolution?"""
+    """ Resolve a pair of clauses. """
+
     literalsNew = set()
-    if firstClause.isResolveableWith(secondClause):
-        for literal in firstClause.literals:
-            if literal.negate() in secondClause.literals:
-                continue
-            else:
-                literalsNew.add(literal)
-        for literal in secondClause.literals:
-            if literal.negate() in firstClause.literals:
-                continue
-            else:
-                literalsNew.add(literal)
-        if len(literalsNew) == 0:
-            return 'NIL'
+    for literal in firstClause.literals:
+        if literal.negate() in secondClause.literals:
+            continue
         else:
-            return Clause(literalsNew)
+            literalsNew.add(literal)
+    for literal in secondClause.literals:
+        if literal.negate() in firstClause.literals:
+            continue
+        else:
+            literalsNew.add(literal)
+    if len(literalsNew) == 0:
+        return 'NIL'
     else:
-        pass
+        return Clause(literalsNew)
+
 
 def selectClauses(clauses, setOfSupport, resolvedPairs):
-    """
-    Select pairs of clauses to resolve.
-    ####################################
-    ###                              ###
-    ###        YOUR CODE HERE        ###
-    ###                              ###
-    ####################################
-    """
-    pass 
+    """ Select pairs of clauses to resolve. """
+    selectedClauses = set()
+    for goalClause in setOfSupport:
+        for otherClause in clauses:
+            if (goalClause, otherClause) not in resolvedPairs:
+                if goalClause.isResolveableWith(otherClause):
+                    selectedClauses.add((goalClause, otherClause))
+    return selectedClauses 
 
 def testResolution():
     """
@@ -305,7 +295,7 @@ def testResolution():
     ~b v c  |   premises
     a       |
     --------+
-    c       |   goal
+    c       |   goal (needs to be negated first)
 
     """
     premise1 = Clause(set([Literal('a', (0, 0), True), Literal('b', (0, 0), False)]))
@@ -313,6 +303,92 @@ def testResolution():
     premise3 = Clause(Literal('a', (0,0)))
 
     goal = Clause(Literal('c', (0,0)))
+
+    print resolution(set([premise1, premise2, premise3]), goal)
+
+def testResolution2():
+    """
+    Dipl. problem
+
+    u v ~t  |
+    t v a   |   premises
+    ~u v ~a |
+    --------+
+    ~t v ~a |   goal (needs to be negated first)
+
+    """
+
+    premise1 = Clause(set([Literal('u', (0, 0), False), Literal('t', (0, 0), True)]))
+    premise2 = Clause(set([Literal('t', (0, 0), False), Literal('a', (0, 0), False)]))
+    premise3 = Clause(set([Literal('u', (0, 0), True), Literal('a', (0, 0), True)]))
+
+    goal = Clause(set([Literal('t', (0, 0), True), Literal('a', (0, 0), True)]))
+
+    print resolution(set([premise1, premise2, premise3]), goal)
+
+def testResolution3():
+    """
+
+    ~p v q v r |
+    s v ~q     |   premises
+    s v ~r     |
+    -----------+
+    ~p         |   goal (needs to be negated first)
+    s          |
+
+    """
+
+    premise1 = Clause(set([Literal('p', (0, 0), True), Literal('q', (0, 0), False), Literal('r', (0, 0), False)]))
+    premise2 = Clause(set([Literal('s', (0, 0), False), Literal('q', (0, 0), True)]))
+    premise3 = Clause(set([Literal('s', (0, 0), False), Literal('r', (0, 0), True)]))
+
+    goal = Clause(set([Literal('p', (0, 0), True), Literal('s', (0, 0), False)]))
+
+    print resolution(set([premise1, premise2, premise3]), goal)
+
+
+def testResolution4():
+    """
+
+    ~c v b     |
+    ~b v e     |   premises
+    ~e v b     |
+    c          |
+    ~d v ~e    |
+    -----------+
+    ~d         |   goal (needs to be negated first)
+    ~a         |
+
+    """
+
+    premise1 = Clause(set([Literal('c', (0, 0), True), Literal('b', (0, 0), False)]))
+    premise2 = Clause(set([Literal('b', (0, 0), True), Literal('e', (0, 0), False)]))
+    premise3 = Clause(set([Literal('e', (0, 0), True), Literal('b', (0, 0), False)]))
+    premise4 = Clause(set([Literal('c', (0,0), False)]))
+    premise5 = Clause(set([Literal('d', (0, 0), True), Literal('e', (0, 0), True)]))
+
+    goal = Clause(set([Literal('d', (0, 0), True), Literal('a', (0, 0), True)]))
+
+    print resolution(set([premise1, premise2, premise3, premise4, premise5]), goal)
+
+
+def testResolutionFalse1():
+    """
+    Example with result false
+
+    ~a v b  |
+    ~b v c  |   premises
+    a       |
+    --------+
+    ~c      |   goal (needs to be negated first)
+
+    """
+    premise1 = Clause(set([Literal('a', (0, 0), True), Literal('b', (0, 0), False)]))
+    premise2 = Clause(set([Literal('b', (0, 0), True), Literal('c', (0, 0), False)]))
+    premise3 = Clause(Literal('a', (0,0)))
+
+    goal = Clause(Literal('c', (0,0), True))
+
     print resolution(set([premise1, premise2, premise3]), goal)
 
 
@@ -323,4 +399,4 @@ if __name__ == '__main__':
 
     this is the starting point of the code which will run. 
     """ 
-    testResolution() 
+    testResolution4()
