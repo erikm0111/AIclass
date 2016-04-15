@@ -257,19 +257,28 @@ def resolvePair(firstClause, secondClause):
     """ Resolve a pair of clauses. """
 
     literalsNew = set()
+    deleted = 0
     for literal in firstClause.literals:
         if literal.negate() in secondClause.literals:
-            continue
+            if deleted<1:
+                deletedLiteral = literal.negate()
+                deleted += 1
+                continue
+            else:
+                literalsNew.add(literal)
         else:
             literalsNew.add(literal)
-    for literal in secondClause.literals:
-        if literal.negate() in firstClause.literals:
-            continue
-        else:
-            literalsNew.add(literal)
+    if deleted==1:
+        for literal in secondClause.literals:
+            if literal==deletedLiteral:
+                continue
+            else:
+                literalsNew.add(literal)
     if len(literalsNew) == 0:
+        print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, 'NIL')
         return 'NIL'
     else:
+        print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, Clause(literalsNew))
         return Clause(literalsNew)
 
 
@@ -328,6 +337,7 @@ def testResolution2():
 
 def testResolution3():
     """
+    1.13 iz knjige
 
     ~p v q v r |
     s v ~q     |   premises
@@ -399,4 +409,4 @@ if __name__ == '__main__':
 
     this is the starting point of the code which will run. 
     """ 
-    testResolution4()
+    testResolution3()
