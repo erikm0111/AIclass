@@ -98,28 +98,128 @@ def logicBasedSearch(problem):
     # array in order to keep the ordering
     visitedStates = []
     startState = problem.getStartState()
-    visitedStates.append(startState)
-    """
-    ####################################
-    ###                              ###
-    ###        YOUR CODE HERE        ###
-    ###                              ###
-    ####################################
-    """
+    #visitedStates.append(startState)
+    print startState
+    from util import PriorityQueue
+    import logic
+    states = {}
+    statesQueue = PriorityQueue()
+    statesQueue.push(startState, stateWeight(startState))
 
-####################################
-###                              ###
-###        YOUR CODE THERE       ###
-###                              ###
-####################################
+    while not statesQueue.isEmpty():
+        currState = statesQueue.pop()
+        visitedStates.append(currState)
+        for state in problem.getSuccessors(currState):
+            if state[0] not in visitedStates:
+                if isSafe(problem, currState, state[0]):
+                    states[state[0]] = [False, False, False]
+                    statesQueue.push(state[0], stateWeight(state[0]))
+                elif isMaybePoison(problem, currState, state[0]):
+                    if state[0] not in states:
+                        states[state[0]] = [False, False, None]
+                    else:
+                        if states[state[0]][0] == None:
+                            states[state[0]][0] = False
+                        if states[state[0]][1] == None:
+                            states[state[0]][1] = False
+                    if True not in states[state[0]] and None not in states[state[0]]:
+                        statesQueue.push(state[0], stateWeight(state[0]))
+                elif isMaybeWumpus(problem, currState, state[0]):
+                    if state[0] not in states:
+                        states[state[0]] = [None, False, False]
+                    else:
+                        if states[state[0]][1] == None:
+                            states[state[0]][1] = False
+                        if states[state[0]][2] == None:
+                            states[state[0]][2] = False
+                    if True not in states[state[0]] and None not in states[state[0]]:
+                        statesQueue.push(state[0], stateWeight(state[0]))
+                elif isMaybeTeleporter(problem, currState, state[0]):
+                    if state[0] not in states:
+                        states[state[0]] = [False, None, False]
+                    else:
+                        if states[state[0]][0] == None:
+                            states[state[0]][0] = False
+                        if states[state[0]][2] == None:
+                            states[state[0]][2] = False
+                    if states[state[0]][0] == False and states[state[0]][2] == False:
+                        statesQueue.push(state[0], stateWeight(state[0]))
 
-"""
-        ####################################
-        ###                              ###
-        ###      YOUR CODE EVERYWHERE    ###
-        ###                              ###
-        ####################################
-"""
+
+    print states
+    return problem.reconstructPath(visitedStates)
+
+def isMaybeTeleporter(problem, currState, currStateSuccessor):
+    import logic
+    premises = []
+    s = problem.isWumpusClose(currState)
+    c = problem.isPoisonCapsuleClose(currState)
+    g = problem.isTeleporterClose(currState)
+
+    for succ in problem.getSuccessors(currState):
+        premises.append(Clause(set([Literal(Labels.TELEPORTER_GLOW, currState, True), Literal(Labels.TELEPORTER, succ[0], False)])))
+    premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, not s)])))
+    premises.append(Clause(set([Literal(Labels.TELEPORTER_GLOW, currState, not g)])))
+    premises.append(Clause(set([Literal(Labels.POISON_CHEMICALS, currState, not c)])))
+
+    goal = Clause(set([Literal(Labels.TELEPORTER, currStateSuccessor, False)]))
+
+    return resolution(set(premises), goal)
+
+
+def isMaybeWumpus(problem, currState, currStateSuccessor):
+    import logic
+    premises = []
+    s = problem.isWumpusClose(currState)
+    c = problem.isPoisonCapsuleClose(currState)
+    g = problem.isTeleporterClose(currState)
+
+    for succ in problem.getSuccessors(currState):
+        premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, True), Literal(Labels.WUMPUS, succ[0], False)])))
+    premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, not s)])))
+    premises.append(Clause(set([Literal(Labels.TELEPORTER_GLOW, currState, not g)])))
+    premises.append(Clause(set([Literal(Labels.POISON_CHEMICALS, currState, not c)])))
+
+    goal = Clause(set([Literal(Labels.WUMPUS, currStateSuccessor, False)]))
+
+    return resolution(set(premises), goal)
+
+def isSafe(problem, currState, currStateSuccessor):
+    import logic
+    premises = []
+    s = problem.isWumpusClose(currState)
+    c = problem.isPoisonCapsuleClose(currState)
+    g = problem.isTeleporterClose(currState)
+
+    for succ in problem.getSuccessors(currState):
+        premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, False), Literal(Labels.TELEPORTER_GLOW, currState, False), \
+             Literal(Labels.POISON_CHEMICALS, currState, False), Literal(Labels.SAFE, succ[0], False)])))
+    premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, not s)])))
+    premises.append(Clause(set([Literal(Labels.TELEPORTER_GLOW, currState, not g)])))
+    premises.append(Clause(set([Literal(Labels.POISON_CHEMICALS, currState, not c)])))
+
+    goal = Clause(set([Literal(Labels.SAFE, currStateSuccessor, False)]))
+
+    return resolution(set(premises), goal)
+
+def isMaybePoison(problem, currState, currStateSuccessor):
+    import logic
+    premises = []
+    s = problem.isWumpusClose(currState)
+    c = problem.isPoisonCapsuleClose(currState)
+    g = problem.isTeleporterClose(currState)
+
+    for succ in problem.getSuccessors(currState):
+        premises.append(Clause(set([Literal(Labels.POISON_CHEMICALS, currState, True), Literal(Labels.POISON, succ[0], False)])))
+    premises.append(Clause(set([Literal(Labels.WUMPUS_STENCH, currState, not s)])))
+    premises.append(Clause(set([Literal(Labels.TELEPORTER_GLOW, currState, not g)])))
+    premises.append(Clause(set([Literal(Labels.POISON_CHEMICALS, currState, not c)])))
+
+    goal = Clause(set([Literal(Labels.POISON, currStateSuccessor, False)]))
+
+    return resolution(set(premises), goal)
+
+#states = {} #za pamcenje informacija o pojedinom stanju, sastoji se od W, T, P zastavica
 
 # Abbreviations
 lbs = logicBasedSearch
