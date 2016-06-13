@@ -266,8 +266,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     openNodes.append(rootNode)
     opened.append(rootNode.position)
 
-    """ideja --> napravit dictionary sa key: (x, y), value: SearchNode"""
-
     while not queueOpen.isEmpty():
         currentNode = queueOpen.pop()
         openNodes.remove(currentNode)

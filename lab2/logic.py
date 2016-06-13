@@ -210,6 +210,19 @@ class Clause:
         return self.__str__()
 
 
+    def __hash__(self):
+        """
+        Return the hash value - this operator overloads the hash(object) function.
+        """
+        return hash(tuple(self.literals))
+
+    def __eq__(self, other):
+        if other == 'NIL':
+            return tuple(self.literals) == 'NIL'
+        else:
+            return tuple(self.literals) == tuple(other.literals)
+
+
 def resolution(clauses, goal):
     """
     Implement refutation resolution. 
@@ -220,9 +233,10 @@ def resolution(clauses, goal):
     carefully design the code before implementing.
     """
     resolvedPairs = set()
-    setOfSupport = goal.negateAll() 
+    setOfSupport = goal.negateAll()
 
     while True:
+        clauses = removeRedundant(clauses, setOfSupport)
         selectedClauses = selectClauses(clauses, setOfSupport, resolvedPairs)
         if len(selectedClauses) == 0:
             return False
@@ -243,13 +257,16 @@ def removeRedundant(clauses, setOfSupport):
     from the aforementioned sets. 
     Be careful not to do the operation in-place as you will modify the 
     original sets. (why?)
-    ####################################
-    ###                              ###
-    ###        YOUR CODE HERE        ###
-    ###                              ###
-    ####################################
     """
-    pass 
+    newClauses = []
+    for clause in clauses:
+        if clause.isRedundant(setOfSupport):
+            continue
+        else:
+            newClauses.append(clause)
+    return set(newClauses)
+
+
 
 def resolvePair(firstClause, secondClause):
     """ Resolve a pair of clauses. """
@@ -273,10 +290,10 @@ def resolvePair(firstClause, secondClause):
             else:
                 literalsNew.add(literal)
     if len(literalsNew) == 0:
-        print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, 'NIL')
+        #print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, 'NIL')
         return 'NIL'
     else:
-        print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, Clause(literalsNew))
+        #print 'Resolving... {}, {} ==>> {}'.format(firstClause, secondClause, Clause(literalsNew))
         return Clause(literalsNew)
 
 
@@ -400,6 +417,25 @@ def testResolutionFalse1():
     print resolution(set([premise1, premise2, premise3]), goal)
 
 
+def testResolution4KRIVO():
+    """
+    A v B v C v D |
+    ~A v ~B v ~C  |   premises
+    ~D            |
+    --------------+
+    D             |   goal (needs to be negated first)
+
+    """
+
+    premise1 = Clause(set([Literal('A', (0,0), False), Literal('B', (0,0), False), Literal('C', (0,0), False), Literal('D', (0,0), False)]))
+    premise2 = Clause(set([Literal('A', (0,0), True), Literal('B', (0,0), True), Literal('C', (0,0), True)]))
+    premise3 = Clause(Literal('D', (0,0), True))
+
+    goal = Clause(Literal('D', (0,0)))
+    
+    print resolution(set([premise1, premise2, premise3]), goal)
+
+
 def testResolutionFact():
     """
     ~a v b  |
@@ -415,6 +451,48 @@ def testResolutionFact():
     print resolution(set([premise1, premise2]), goal)
 
 
+def testEleven():
+    """
+    s ~i
+    ~s a
+    ~a
+    -----
+    ~s
+    """
+    premise1 = Clause(set([Literal('s', (0, 0), False), Literal('i', (0, 0), True)]))
+    premise2 = Clause(set([Literal('s', (0, 0), True), Literal('a', (0, 0), False)]))
+    premise3 = Clause(set([Literal('a', (0, 0), True)]))
+
+    goal = Clause(set([Literal('s', (0, 0), True)]))
+
+    print resolution(set([premise1, premise2, premise3]), goal)
+
+
+def testLab():
+    """
+    A sample of a resolution problem that should return True. 
+    You should come up with your own tests in order to validate your code. 
+
+    """
+    premise1 = Clause(set([Literal('a', (0, 0), True), Literal('a', (0, 0), True)]))
+    premise2 = Clause(set([Literal('a', (0, 0), False), Literal('a', (0, 0), False)]))
+
+    goal = Clause(set([Literal('a', (0, 0), False), Literal('a', (0, 0), True)]))
+
+    print resolution(set([premise1, premise2]), goal)
+
+def test118Skripta():
+    premise1 = Clause(set([Literal('a', (0, 0), True), Literal('b', (0, 0), False)]))
+    premise2 = Clause(set([Literal('b', (0, 0), True), Literal('d', (0, 0), False)]))
+    premise3 = Clause(set([Literal('c', (0, 0), True), Literal('d', (0, 0), False)]))
+    premise4 = Clause(set([Literal('d', (0, 0), True), Literal('e', (0, 0), False)]))
+    premise5 = Clause(set([Literal('b', (0, 0), False), Literal('c', (0, 0), False)]))
+
+    goal = Clause(set([Literal('e', (0, 0), False)]))
+
+    print resolution(set([premise1, premise2, premise3, premise4, premise5]), goal)
+
+
 if __name__ == '__main__':
     """
     The main function - if you run logic.py from the command line by 
@@ -422,4 +500,4 @@ if __name__ == '__main__':
 
     this is the starting point of the code which will run. 
     """ 
-    testResolution2()
+    test118Skripta()
