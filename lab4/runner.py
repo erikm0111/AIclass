@@ -26,6 +26,7 @@ if __name__ == '__main__':
 	# setting the random seed forces the same results of randoming each
 	# time you start the program - that way you can demonstrate your results
 	np.random.seed(11071998)
+	random.seed(11071998)
 
 
 	# Load the train / test data
@@ -36,8 +37,21 @@ if __name__ == '__main__':
 		To change the function being approximated, just change the paths 
 		to the dataset in the arguments of the data loader.s
 	"""
-	X_train, y_train = dataLoader.loadFrom(SIN_TRAIN)
-	X_test, y_test = dataLoader.loadFrom(SIN_TEST)
+	sinusoida = False
+	rastrigin = True
+	rosenbrock = False
+
+	if sinusoida:
+		X_train, y_train = dataLoader.loadFrom(SIN_TRAIN)
+		X_test, y_test = dataLoader.loadFrom(SIN_TEST)
+
+	if rastrigin:
+		X_train, y_train = dataLoader.loadFrom(RASTRIGIN_TRAIN)
+		X_test, y_test = dataLoader.loadFrom(RASTRIGIN_TEST)
+
+	if rosenbrock:
+		X_train, y_train = dataLoader.loadFrom(ROSENBROCK_TRAIN)
+		X_test, y_test = dataLoader.loadFrom(ROSENBROCK_TEST)
 
 	# for check, print out the shapes of the input variables
 	# the first dimension is the number of input samples, the second dimension
@@ -45,8 +59,8 @@ if __name__ == '__main__':
 
 	print "Train data shapes: ", X_train.shape, y_train.shape 
 	print "Test data shapes: ", X_test.shape, y_test.shape 
-	print "X_train ", X_train
-	print "y_train ", y_train
+	#print "X_train ", X_train
+	#print "y_train ", y_train
 
 	# The dimensionality of the input layer of the network is the second
 	# dimension of the shape 
@@ -66,12 +80,21 @@ if __name__ == '__main__':
 	#############################
 	#       YOUR CODE HERE      #
 	#############################
-	#NN.addLayer(LinearLayer(input_size, 3))
-	#NN.addLayer(SigmoidLayer())
-	#NN.addLayer(LinearLayer(3, output_size))
-	NN.addLayer(LinearLayer(input_size, 3))
-	NN.addLayer(SigmoidLayer())
-	NN.addLayer(LinearLayer(3, output_size))
+
+	if sinusoida:
+		NN.addLayer(LinearLayer(input_size, 2*(input_size+output_size)))
+		NN.addLayer(FunctionLayer(tanh))
+		NN.addLayer(LinearLayer(2*(input_size+output_size), output_size))
+
+	if rastrigin:
+		NN.addLayer(LinearLayer(input_size, X_train.shape[0]/(input_size+output_size)))
+		NN.addLayer(SigmoidLayer())
+		NN.addLayer(LinearLayer(X_train.shape[0]/(input_size+output_size), output_size))
+
+	if rosenbrock:
+		NN.addLayer(LinearLayer(input_size, X_train.shape[0]/(input_size+output_size)))
+		NN.addLayer(FunctionLayer(leakyReLU))
+		NN.addLayer(LinearLayer(X_train.shape[0]/(input_size+output_size), output_size))
 
 
 	####################
@@ -107,12 +130,29 @@ if __name__ == '__main__':
 	#    MODIFY CODE AT WILL FROM HERE    #
 	#######################################
 
-	elitism = 1 # Keep this many of top units in each iteration
-	populationSize = 6 # The number of chromosomes
-	mutationProbability  = .1 # Probability of mutation
-	mutationScale = 0.25 # Standard deviation of the gaussian noise
-	numIterations = 2000 # Number of iterations to run the genetic algorithm for
-	errorTreshold = 1e-6 # Lower threshold for the error while optimizing
+	if sinusoida:
+		elitism = 1 # Keep this many of top units in each iteration
+		populationSize = 10 # The number of chromosomes
+		mutationProbability  = .25 # Probability of mutation
+		mutationScale = 0.05 # Standard deviation of the gaussian noise
+		numIterations = 5000 # Number of iterations to run the genetic algorithm for
+		errorTreshold = 1e-6 # Lower threshold for the error while optimizing
+
+	if rastrigin:
+		elitism = 2 # Keep this many of top units in each iteration
+		populationSize = 10 # The number of chromosomes
+		mutationProbability  = .1 # Probability of mutation
+		mutationScale = 0.3 # Standard deviation of the gaussian noise
+		numIterations = 5000 # Number of iterations to run the genetic algorithm for
+		errorTreshold = 1e-6 # Lower threshold for the error while optimizing
+
+	if rosenbrock:
+		elitism = 2 # Keep this many of top units in each iteration
+		populationSize = 10 # The number of chromosomes
+		mutationProbability  = .2 # Probability of mutation
+		mutationScale = 0.3 # Standard deviation of the gaussian noise
+		numIterations = 5000 # Number of iterations to run the genetic algorithm for
+		errorTreshold = 1e-6 # Lower threshold for the error while optimizing
 
 
 	GA = GeneticAlgorithm(NN.size(), errorClosure,
@@ -125,7 +165,7 @@ if __name__ == '__main__':
 
 
 	print_every = 100 # Print the output every this many iterations
-	plot_every = 100 # Plot the actual vs estimated functions every this many iterations
+	plot_every = 200 # Plot the actual vs estimated functions every this many iterations
 
 	# emulated do-while loop
 	done = False
@@ -137,9 +177,9 @@ if __name__ == '__main__':
 			print "Error at iteration %d = %f" % (iteration, errorClosure(best))
 
 		#if iteration % plot_every == 0: 
-			#NN.setWeights(best)
-			#plotter.plot(X_train, y_train, NN.output(X_train)) 
-			#plotter.plot_surface(X_train, y_train, NN)
+		#		NN.setWeights(best)
+		#	plotter.plot(X_train, y_train, NN.output(X_train)) 
+		#	plotter.plot_surface(X_train, y_train, NN)
 
 	print "Training done, running on test set"
 	NN.setWeights(best)

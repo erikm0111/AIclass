@@ -17,6 +17,10 @@ class GeneticAlgorithm(object):
 					errorTreshold = 1e-6
 					): 
 
+		np.random.seed(11071998)
+		random.seed(11071998)
+
+
 		self.populationSize = populationSize # size of the population of units
 		self.p = mutationProbability # probability of mutation
 		self.numIter = numIterations # maximum number of iterations
@@ -39,8 +43,7 @@ class GeneticAlgorithm(object):
 
 		# sort descending according to fitness (larger is better)
 		self.population = sorted(self.population, key=lambda t: -t[1])
-		#for nesto in self.population:
-		#	print nesto
+
 	
 	def step(self):	
 		"""
@@ -68,7 +71,6 @@ class GeneticAlgorithm(object):
 			parent1, parent2 = self.selectParents()
 			child = self.crossover(parent1[0], parent2[0])
 			child = self.mutate(child)
-			#print "CHILD: ", child
 			fitness = self.calculateFitness(np.array(child))
 			newGeneration.append((child, fitness))
 
@@ -76,7 +78,6 @@ class GeneticAlgorithm(object):
 		self.population = sorted(self.population, key=lambda t: -t[1])
 		# dodati i za error threshold
 		bestOfPopulation = self.best()
-		#print "BEST OF POPULATION: ", bestOfPopulation
 		return self.i == self.numIter, self.i, np.array(bestOfPopulation[0])
 
 
@@ -86,11 +87,7 @@ class GeneticAlgorithm(object):
 			a unit. Remember - fitness is larger as the unit is better!
 		"""
 		chromosomeError = self.f(chromosome)
-		#print "Chromosome: ", chromosome
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		#print "ChromosomeError: ", chromosomeError
+
 		return 1.0 / float(chromosomeError)
 
 	def bestN(self, n):		
@@ -146,12 +143,8 @@ class GeneticAlgorithm(object):
 			Given a unit, mutate its values by applying gaussian noise
 			according to the parameter k
 		"""
-		#print "============================"
-		#print "Chromosome1: ", chromosome
 		for i in range(len(chromosome)):
 			if(random.uniform(0,1) <= self.p):
 				chromosome[i] += random.gauss(0, self.k)
-		#print "Chromosome2: ", chromosome
-		#print "============================"
 		return chromosome
 	
