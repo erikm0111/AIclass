@@ -45,10 +45,13 @@ class NeuralNetwork(object):
 		# Input: vector X (train / test set)
 		# Output: vector y_pred (predicted output values of the target function)
 		outputMat = np.zeros((0,X.shape[1]))
+		outputVec = np.array([])
 		for row in X:
 			resultForRow = self.output(row)
-			outputMat = np.vstack((outputMat, resultForRow))
-		return outputMat
+			outputVec = np.append(outputVec, resultForRow)
+
+		#print "OUTPUT MAT: ", outputVec.shape
+		return outputVec
 
 
 	def error(self, prediction, y):
@@ -75,7 +78,7 @@ class NeuralNetwork(object):
 		elems = []
 		for i in range(len(predictions)):
 			elems.append(self.error(predictions[i], Y[i]))
-		return sum(elems) / len(predictions)
+		return sum(elems) / float(len(predictions))
 
 
 
@@ -84,7 +87,13 @@ class NeuralNetwork(object):
 			Run the inputs X (train/test set) through the network, and calculate
 			the error on the given true target function values Y
 		"""
-		return self.total_error(X, Y)
+		#print "X --> ", X
+		#print "Y --> ", Y 
+		predictions = self.outputs(X)
+		#print "PREDICTIONS: ", predictions
+		#print "TOTAL_ERROR: ", self.total_error(predictions, Y)
+
+		return self.total_error(predictions, Y)
 
 	def size(self):
 		"""

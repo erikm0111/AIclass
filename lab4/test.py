@@ -1,4 +1,6 @@
 import numpy as np
+import math
+import random
 
 #v1 = np.array([1,2,3])
 #v2 = np.array([4,5,6])
@@ -50,7 +52,16 @@ import numpy as np
 #outputMat=np.vstack((outputMat, X))
 #print outputMat
 
-lista = []
-lista.append(2)
-lista.append(4)
-print sum(lista)
+#lista = []
+#lista.append(2)
+#lista.append(4)
+#print sum(lista)
+
+#randoms = np.random.randn()
+#print randoms
+
+
+lista1 = [1,2,3]
+prazna = []
+prazna.extend(lista1)
+print prazna

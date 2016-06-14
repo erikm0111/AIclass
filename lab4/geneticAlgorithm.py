@@ -1,4 +1,6 @@
 import numpy as np 
+import math
+import random
 
 class GeneticAlgorithm(object): 
 	"""
@@ -37,6 +39,8 @@ class GeneticAlgorithm(object):
 
 		# sort descending according to fitness (larger is better)
 		self.population = sorted(self.population, key=lambda t: -t[1])
+		#for nesto in self.population:
+		#	print nesto
 	
 	def step(self):	
 		"""
@@ -56,10 +60,24 @@ class GeneticAlgorithm(object):
 		"""
 		
 		self.i += 1 
-		
-		
+
+		newGeneration = []
+		newGeneration.extend(self.bestN(self.keep))
+
+		for i in range(self.populationSize - self.keep):
+			parent1, parent2 = self.selectParents()
+			child = self.crossover(parent1[0], parent2[0])
+			child = self.mutate(child)
+			#print "CHILD: ", child
+			fitness = self.calculateFitness(np.array(child))
+			newGeneration.append((child, fitness))
+
+		self.population = newGeneration
+		self.population = sorted(self.population, key=lambda t: -t[1])
 		# dodati i za error threshold
-		return (self.i == self.numIter, self.i, self.best())
+		bestOfPopulation = self.best()
+		#print "BEST OF POPULATION: ", bestOfPopulation
+		return self.i == self.numIter, self.i, np.array(bestOfPopulation[0])
 
 
 	def calculateFitness(self, chromosome):
@@ -68,11 +86,12 @@ class GeneticAlgorithm(object):
 			a unit. Remember - fitness is larger as the unit is better!
 		"""
 		chromosomeError = self.f(chromosome)
-
+		#print "Chromosome: ", chromosome
 		#############################
 		#       YOUR CODE HERE      #
 		#############################
-		pass
+		#print "ChromosomeError: ", chromosomeError
+		return 1.0 / float(chromosomeError)
 
 	def bestN(self, n):		
 		"""
@@ -92,10 +111,22 @@ class GeneticAlgorithm(object):
 			selection proportional to the fitness of the units in the
 			population		
 		"""
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass
+		suma = 0
+		for chromAndFitness in self.population:
+			suma += chromAndFitness[1]
+
+		lista = []
+		for i in range(2):
+			pointer = random.uniform(0, suma)
+
+			domain = 0
+			for chromAndFitness in self.population:
+				domain += chromAndFitness[1]
+				if pointer <= domain:
+					lista.append(chromAndFitness)
+
+		return lista[0], lista[1]
+
 
 	def crossover(self, p1, p2): 
 		"""
@@ -103,7 +134,7 @@ class GeneticAlgorithm(object):
 			averaging their values in order to create a new child unit
 		"""
 		i = 0
-		child = np.array([])
+		child = []
 		for weight1 in p1:
 			weight2 = p2[i]
 			i += 1
@@ -115,10 +146,12 @@ class GeneticAlgorithm(object):
 			Given a unit, mutate its values by applying gaussian noise
 			according to the parameter k
 		"""
-
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass 
-
-
+		#print "============================"
+		#print "Chromosome1: ", chromosome
+		for i in range(len(chromosome)):
+			if(random.uniform(0,1) <= self.p):
+				chromosome[i] += random.gauss(0, self.k)
+		#print "Chromosome2: ", chromosome
+		#print "============================"
+		return chromosome
+	

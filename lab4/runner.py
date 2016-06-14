@@ -66,11 +66,12 @@ if __name__ == '__main__':
 	#############################
 	#       YOUR CODE HERE      #
 	#############################
-	NN.addLayer(LinearLayer(input_size, 5))
-	NN.addLayer(LinearLayer(5,3))
+	#NN.addLayer(LinearLayer(input_size, 3))
+	#NN.addLayer(SigmoidLayer())
+	#NN.addLayer(LinearLayer(3, output_size))
+	NN.addLayer(LinearLayer(input_size, 3))
 	NN.addLayer(SigmoidLayer())
-	NN.addLayer(LinearLayer(3,5))
-	NN.addLayer(LinearLayer(5, output_size))
+	NN.addLayer(LinearLayer(3, output_size))
 
 
 	####################
@@ -108,9 +109,9 @@ if __name__ == '__main__':
 
 	elitism = 1 # Keep this many of top units in each iteration
 	populationSize = 6 # The number of chromosomes
-	mutationProbability  = .8 # Probability of mutation
-	mutationScale = 10. # Standard deviation of the gaussian noise
-	numIterations = 10000 # Number of iterations to run the genetic algorithm for
+	mutationProbability  = .1 # Probability of mutation
+	mutationScale = 0.25 # Standard deviation of the gaussian noise
+	numIterations = 2000 # Number of iterations to run the genetic algorithm for
 	errorTreshold = 1e-6 # Lower threshold for the error while optimizing
 
 
@@ -130,14 +131,15 @@ if __name__ == '__main__':
 	done = False
 	while not done: 
 
-		#done, iteration, best = GA.step()
+		done, iteration, best = GA.step()
+
 		if iteration % print_every == 0: 
 			print "Error at iteration %d = %f" % (iteration, errorClosure(best))
 
-		if iteration % plot_every == 0: 
-			NN.setWeights(best)
-			plotter.plot(X_train, y_train, NN.output(X_train)) 
-			plotter.plot_surface(X_train, y_train, NN)
+		#if iteration % plot_every == 0: 
+			#NN.setWeights(best)
+			#plotter.plot(X_train, y_train, NN.output(X_train)) 
+			#plotter.plot_surface(X_train, y_train, NN)
 
 	print "Training done, running on test set"
 	NN.setWeights(best)
