@@ -29,13 +29,12 @@ class NeuralNetwork(object):
 		# output of the last layer. The input to the first layer is the 
 		# vector x.
 
-		###
-		#
-		###
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass 
+		# x je vektor, za izlaz isto moramo dobit vektor, kroz slojeve mnozimo znacajke(x) sa random vrijednostima
+		newValues = x
+		for layer in self.layers:
+			newValues = layer.output(newValues)
+		return newValues
+
 
 	def outputs(self, X):
 		"""
@@ -45,11 +44,12 @@ class NeuralNetwork(object):
 
 		# Input: vector X (train / test set)
 		# Output: vector y_pred (predicted output values of the target function)
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
+		outputMat = np.zeros((0,X.shape[1]))
+		for row in X:
+			resultForRow = self.output(row)
+			outputMat = np.vstack((outputMat, resultForRow))
+		return outputMat
 
-		pass 
 
 	def error(self, prediction, y):
 		"""
@@ -59,11 +59,7 @@ class NeuralNetwork(object):
 
 		# Return the square error for a single example (the mean square error)
 		# is calculated over all the training instances
-
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass 
+		return (prediction - y) * (prediction - y)
 
 
 	def total_error(self, predictions, Y): 
@@ -76,21 +72,19 @@ class NeuralNetwork(object):
 		# Output: The Mean Square Error for all the instances
 
 		# NOTE: The output HAS to be a single floating point value!
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass 
+		elems = []
+		for i in range(len(predictions)):
+			elems.append(self.error(predictions[i], Y[i]))
+		return sum(elems) / len(predictions)
+
+
 
 	def forwardStep(self, X, Y):
 		"""
 			Run the inputs X (train/test set) through the network, and calculate
 			the error on the given true target function values Y
 		"""
-
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass
+		return self.total_error(X, Y)
 
 	def size(self):
 		"""

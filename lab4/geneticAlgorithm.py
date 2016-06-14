@@ -52,16 +52,14 @@ class GeneticAlgorithm(object):
 			* an integer representing the current iteration of the 
 				algorithm
 			* the weights of the best unit in the current iteration
-
+		
 		"""
 		
 		self.i += 1 
-
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-
-		pass
+		
+		
+		# dodati i za error threshold
+		return (self.i == self.numIter, self.i, self.best())
 
 
 	def calculateFitness(self, chromosome):
@@ -80,19 +78,13 @@ class GeneticAlgorithm(object):
 		"""
 			Return the best n units from the population
 		"""
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass
+		return self.population[:n]
 
 	def best(self):
 		"""
 			Return the best unit from the population
 		"""
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass 
+		return self.population[0]
 
 	def selectParents(self):
 		"""
@@ -110,10 +102,13 @@ class GeneticAlgorithm(object):
 			Given two parent units p1 and p2, do a simple crossover by 
 			averaging their values in order to create a new child unit
 		"""
-		#############################
-		#       YOUR CODE HERE      #
-		#############################
-		pass
+		i = 0
+		child = np.array([])
+		for weight1 in p1:
+			weight2 = p2[i]
+			i += 1
+			child.append((weight1+weight2)/2.0)
+		return child
 
 	def mutate(self, chromosome):
 		"""

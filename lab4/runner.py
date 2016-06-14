@@ -45,6 +45,8 @@ if __name__ == '__main__':
 
 	print "Train data shapes: ", X_train.shape, y_train.shape 
 	print "Test data shapes: ", X_test.shape, y_test.shape 
+	print "X_train ", X_train
+	print "y_train ", y_train
 
 	# The dimensionality of the input layer of the network is the second
 	# dimension of the shape 
@@ -64,7 +66,11 @@ if __name__ == '__main__':
 	#############################
 	#       YOUR CODE HERE      #
 	#############################
-
+	NN.addLayer(LinearLayer(input_size, 5))
+	NN.addLayer(LinearLayer(5,3))
+	NN.addLayer(SigmoidLayer())
+	NN.addLayer(LinearLayer(3,5))
+	NN.addLayer(LinearLayer(5, output_size))
 
 
 	####################
@@ -107,6 +113,7 @@ if __name__ == '__main__':
 	numIterations = 10000 # Number of iterations to run the genetic algorithm for
 	errorTreshold = 1e-6 # Lower threshold for the error while optimizing
 
+
 	GA = GeneticAlgorithm(NN.size(), errorClosure,
 		elitism = elitism,
 		populationSize = populationSize,
@@ -122,8 +129,8 @@ if __name__ == '__main__':
 	# emulated do-while loop
 	done = False
 	while not done: 
-		done, iteration, best = GA.step()
 
+		#done, iteration, best = GA.step()
 		if iteration % print_every == 0: 
 			print "Error at iteration %d = %f" % (iteration, errorClosure(best))
 
