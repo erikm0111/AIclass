@@ -1,0 +1,4 @@
+1n1 - oznacava arhitekturu neuronske mreze
+leakyrelu - oznacava prijenosnu funkciju
+error7_58 - oznacava gresku na testovima (MSE - Mean Square Error), u ovom slucaju je to 7.58
+11071998 - oznacava seed koji se koristi u random funkcijama (random.seed(11071998), np.random(11071998))
